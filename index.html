@@ -1,33 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>NYC Today – Parking & Service Status</title>
+<meta charset="UTF-8">
+<title>NYC Today Status</title>
 
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
-      background: #ffffff;
-    }
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+  }
 
-    iframe {
-      width: 100vw;
-      height: 100vh;
-      border: 0;
-    }
-  </style>
+  .panel {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 350px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  }
+
+  .date {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+
+  .item {
+    margin-bottom: 15px;
+  }
+
+  .label {
+    font-weight: bold;
+    color: #333;
+  }
+
+  .value {
+    margin-top: 3px;
+    font-size: 1.1em;
+  }
+</style>
+
 </head>
-
 <body>
 
-  <iframe
-    src="https://www.nyc.gov/html/dot/html/motorist/alternate-side-parking.shtml"
-    loading="lazy">
-  </iframe>
+<div class="panel">
+  <div class="box">
+    <div class="date" id="todayDate">Loading date…</div>
+
+    <div class="item">
+      <div class="label">Alternate Side Parking</div>
+      <div class="value" id="aspStatus">Loading…</div>
+    </div>
+
+    <div class="item">
+      <div class="label">NYC Public Schools</div>
+      <div class="value" id="schoolStatus">Loading…</div>
+    </div>
+
+    <div class="item">
+      <div class="label">Trash & Recycling</div>
+      <div class="value" id="sanitationStatus">Loading…</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Date
+const today = new Date();
+document.getElementById("todayDate").innerText =
+  today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+
+// ASP Status (simple placeholder)
+fetch("https://raw.githubusercontent.com/erickouassi/The-NYC-ASP-API/main/data_asp_nyc_2025.js")
+  .then(r => r.text())
+  .then(t => {
+    const key = today.toISOString().slice(0,10);
+    const match = t.match(new RegExp(key + '.*?"status":"(.*?)"', "i"));
+    document.getElementById("aspStatus").innerText =
+      match ? match[1] : "No update available";
+  })
+  .catch(() => {
+    document.getElementById("aspStatus").innerText = "Unavailable";
+  });
+
+// School Status (weekends closed)
+const day = today.getDay();
+document.getElementById("schoolStatus").innerText =
+  (day === 0 || day === 6) ? "Closed (Weekend)" : "Open";
+
+// Sanitation (placeholder)
+document.getElementById("sanitationStatus").innerText =
+  "Normal Collection";
+</script>
 
 </body>
 </html>
