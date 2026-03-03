@@ -9,10 +9,10 @@
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background: #f5f5f5;
+    background: #f2f2f2;
   }
 
-  .panel {
+  .container {
     width: 100vw;
     height: 100vh;
     display: flex;
@@ -20,23 +20,23 @@
     align-items: center;
   }
 
-  .box {
+  .panel {
     background: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 350px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    padding: 25px;
+    border-radius: 12px;
+    width: 360px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.15);
   }
 
   .date {
-    font-size: 1.2em;
+    font-size: 1.3em;
     font-weight: bold;
-    margin-bottom: 15px;
     text-align: center;
+    margin-bottom: 20px;
   }
 
   .item {
-    margin-bottom: 15px;
+    margin-bottom: 18px;
   }
 
   .label {
@@ -45,7 +45,7 @@
   }
 
   .value {
-    margin-top: 3px;
+    margin-top: 4px;
     font-size: 1.1em;
   }
 </style>
@@ -53,13 +53,19 @@
 </head>
 <body>
 
-<div class="panel">
-  <div class="box">
-    <div class="date" id="todayDate">Loading date…</div>
+<div class="container">
+  <div class="panel">
+
+    <div class="date" id="todayDate">Loading…</div>
 
     <div class="item">
       <div class="label">Alternate Side Parking</div>
       <div class="value" id="aspStatus">Loading…</div>
+    </div>
+
+    <div class="item">
+      <div class="label">Parking Meters</div>
+      <div class="value" id="meterStatus">Loading…</div>
     </div>
 
     <div class="item">
@@ -71,6 +77,7 @@
       <div class="label">Trash & Recycling</div>
       <div class="value" id="sanitationStatus">Loading…</div>
     </div>
+
   </div>
 </div>
 
@@ -80,18 +87,11 @@ const today = new Date();
 document.getElementById("todayDate").innerText =
   today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
 
-// ASP Status (simple placeholder)
-fetch("https://raw.githubusercontent.com/erickouassi/The-NYC-ASP-API/main/data_asp_nyc_2025.js")
-  .then(r => r.text())
-  .then(t => {
-    const key = today.toISOString().slice(0,10);
-    const match = t.match(new RegExp(key + '.*?"status":"(.*?)"', "i"));
-    document.getElementById("aspStatus").innerText =
-      match ? match[1] : "No update available";
-  })
-  .catch(() => {
-    document.getElementById("aspStatus").innerText = "Unavailable";
-  });
+// ASP Status (placeholder)
+document.getElementById("aspStatus").innerText = "In Effect Today";
+
+// Parking Meters (NYC standard rule)
+document.getElementById("meterStatus").innerText = "In Effect";
 
 // School Status (weekends closed)
 const day = today.getDay();
@@ -99,8 +99,7 @@ document.getElementById("schoolStatus").innerText =
   (day === 0 || day === 6) ? "Closed (Weekend)" : "Open";
 
 // Sanitation (placeholder)
-document.getElementById("sanitationStatus").innerText =
-  "Normal Collection";
+document.getElementById("sanitationStatus").innerText = "Normal Collection";
 </script>
 
 </body>
